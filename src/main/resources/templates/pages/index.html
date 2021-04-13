@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <div class="container" style="padding: 40px;">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="panel panel-info">
+                    <div class="form-group" style="margin-top:10px;margin-left: 10px;" id="enterDiv">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input class="form-control" id="usernameTxt" type="text" value="输入用户名">
+                            </div>
+                            <div class="col-sm-2">
+                                <button id="enter" type="button" class="btn btn-primary">进入</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="text-align: center">
+                        <span id="username"></span>
+                    </div>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-body" style="height: 500px">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">在线用户</h3>
+                                    </div>
+                                    <div class="panel-body" style="height: 430px">
+                                        <ul class="list-group" id="userBox">
+                                            <li class="list-group-item list-group-item-success">Dapibus ac facilisis
+                                                in
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">聊天室</h3>
+                                    </div>
+                                    <div class="panel-body" style="height: 430px">
+                                        <ul class="list-group" id="messageBox">
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="sendMessageDiv">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input class="form-control" id="content" type="text">
+                        </div>
+                        <div class="col-sm-4">
+                            <button id="sendMessage" type="button" class="btn btn-primary">发送</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</head>
+<body>
+
+<!-- 独立JS -->
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:src="@{/js/index.js}"></script>
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</body>
+</html>
