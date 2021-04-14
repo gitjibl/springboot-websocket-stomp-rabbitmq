@@ -27,14 +27,24 @@ public class RabbitmqConfig {
     @Autowired
     private ChatService chatService;
 
-    //绑定路由键
+    //公共绑定路由键
     public final static String TopicRoutingKey = "topic.public";
-    //队列名称
+    //公共队列名称
     public final static String TopicQueueName = "topicQueue";
 
+    //绑定路由键
+    public final static String TopicUserRoutingKey = "topic.user";
+    //队列名称
+    public final static String TopicUserQueueName = "topicUserQueue";
+
     @Bean
-    public Queue topicQueue() {
+    public Queue topicPublicQueue() {
         return new Queue(TopicQueueName, true);
+    }
+
+    @Bean
+    public Queue topicUserQueue() {
+        return new Queue(TopicUserQueueName, true);
     }
 
     @Bean
@@ -43,8 +53,13 @@ public class RabbitmqConfig {
     }
 
     @Bean
-    Binding bindingExchangeMessage() {
-        return BindingBuilder.bind(topicQueue()).to(topicExchange()).with(TopicRoutingKey);
+    Binding bindingPublicExchange() {
+        return BindingBuilder.bind(topicPublicQueue()).to(topicExchange()).with(TopicRoutingKey);
+    }
+
+    @Bean
+    Binding bindingUserExchange() {
+        return BindingBuilder.bind(topicUserQueue()).to(topicExchange()).with(TopicUserRoutingKey);
     }
 
     @Bean
@@ -81,7 +96,7 @@ public class RabbitmqConfig {
     public SimpleMessageListenerContainer simpleMessageListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
         // 设置需要手动确认消息的队列，可以同时设置多个，前提是队列需要提前创建好
-        container.setQueues(topicQueue());
+        container.setQueues(topicPublicQueue(),topicUserQueue());
         //设置监听外露
         container.setExposeListenerChannel(true);
         //设置最大的并发的消费者数量
@@ -96,12 +111,25 @@ public class RabbitmqConfig {
                 byte[] body = message.getBody();
                 String msg = new String(body);
                 System.out.println("rabbitmq收到消息 : " + msg);
-                Boolean sendToWebsocket = chatService.sendMsg(msg);
+                Boolean sendToWebsocket = false;
+                if ("topicQueue".equals(message.getMessageProperties().getConsumerQueue())){
+                    System.out.println("消费的消息来自的队列名为："+message.getMessageProperties().getConsumerQueue());
+                    System.out.println("执行topicQueue中的消息的业务处理流程......");
+                    sendToWebsocket = chatService.sendPublicMsg(msg);
+                }
+
+                if ("topicUserQueue".equals(message.getMessageProperties().getConsumerQueue())){
+                    System.out.println("消费的消息来自的队列名为："+message.getMessageProperties().getConsumerQueue());
+                    System.out.println("执行topicUserQueue中的消息的业务处理流程......");
+                    sendToWebsocket = chatService.sendUserMsg(msg);
+                }
+
                 if (sendToWebsocket) {
                     System.out.println("消息处理成功！ 已经推送到websocket！");
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), true); //确认消息成功消费
 
                 }
+
             }
 
         });

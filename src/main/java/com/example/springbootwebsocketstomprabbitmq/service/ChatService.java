@@ -22,10 +22,14 @@ public class ChatService {
     @Autowired
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
-    public Boolean sendMsg(String msg) {
+    public Boolean sendPublicMsg(String msg) {
         try {
             JSONObject msgJson = JSONObject.parseObject(msg);
-            if (msgJson.getString("to").equals("all") && msgJson.getString("type").equals(ChatMessage.MessageType.CHAT.toString())){
+            if (msgJson.getString("to").equals("ALL") && msgJson.getString("type").equals(ChatMessage.MessageType.CHAT.toString())){
+                simpMessageSendingOperations.convertAndSend("/topic/public", msgJson);
+            }else if (msgJson.getString("to").equals("ALL") && msgJson.getString("type").equals(ChatMessage.MessageType.JOIN.toString())) {
+                simpMessageSendingOperations.convertAndSend("/topic/public", msgJson);
+            }else if (msgJson.getString("to").equals("ALL") && msgJson.getString("type").equals(ChatMessage.MessageType.LEAVE.toString())) {
                 simpMessageSendingOperations.convertAndSend("/topic/public", msgJson);
             }
         }catch (MessagingException e) {
@@ -34,4 +38,17 @@ public class ChatService {
         }
         return true;
     }
+    public Boolean sendUserMsg(String msg) {
+        try {
+            JSONObject msgJson = JSONObject.parseObject(msg);
+            if (msgJson.getString("type").equals(ChatMessage.MessageType.PRIVATE_CHAT.toString())){
+                simpMessageSendingOperations.convertAndSendToUser(msgJson.getString("to"),"/topic/private", msgJson);
+            }
+        }catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 }

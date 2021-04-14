@@ -53,22 +53,37 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        /*//点对点应配置一个/user消息代理，广播式应配置一个/topic消息代理,群发（mass），单独聊天（alone）
-        registry.enableSimpleBroker("/topic", "/user", "/mass", "/alone");*/
-        // 点对点使用的前缀 无需配置 默认/user
+        /*
+         *  1. 配置一对一消息前缀， 客户端接收一对一消息需要配置的前缀 如“'/user/'+userid + '/message'”，
+         *     是客户端订阅一对一消息的地址 stompClient.subscribe js方法调用的地址
+         *  2. 使用@SendToUser发送私信的规则不是这个参数设定，在框架内部是用UserDestinationMessageHandler处理，
+         *     而不是而不是 AnnotationMethodMessageHandler 或  SimpleBrokerMessageHandler
+         *     or StompBrokerRelayMessageHandler，是在@SendToUser的URL前加“user+sessionId"组成
+         */
         registry.setUserDestinationPrefix("/user");
-        //所有目的地以“/app”开头的，全局(客户端)使用的消息前缀,都会路由到@MessageMapping 注解方法中，而不会发布到代理队列或主题中
+        /*
+         *  "/app" 为配置应用服务器的地址前缀，表示所有以/app 开头的客户端消息或请求
+         *   都会路由到带有@MessageMapping 注解的方法中
+         */
         registry.setApplicationDestinationPrefixes("/app");
-        //使用RabbitMQ做为消息代理，替换默认的Simple Broker
-        registry.enableStompBrokerRelay("/topic", "/queue")
-                .setVirtualHost(rabbitmq_virtual_host)
-                .setRelayHost(rabbitmq_host)
-                .setClientLogin(rabbitmq_username)
-                .setClientPasscode(rabbitmq_password)
-                .setSystemLogin(rabbitmq_username)
-                .setSystemPasscode(rabbitmq_password)
-                .setSystemHeartbeatSendInterval(5000)
-                .setSystemHeartbeatReceiveInterval(4000);
+        /*
+         *  enableStompBrokerRelay 配置外部的STOMP服务，需要安装额外的支持 比如rabbitmq或activemq
+         * 1. 配置代理域，可以配置多个，此段代码配置代理目的地的前缀为 /topic 或者 /queue
+         *    我们就可以在配置的域上向客户端推送消息
+         * 3. 可以通过 setRelayHost 配置代理监听的host,默认为localhost
+         * 4. 可以通过 setRelayPort 配置代理监听的端口，默认为61613
+         * 5. 可以通过 setClientLogin 和 setClientPasscode 配置账号和密码
+         * 6. setxxx这种设置方法是可选的，根据业务需要自行配置，也可以使用默认配置
+         */
+//        registry.enableStompBrokerRelay("/topic", "/queue")
+//                .setVirtualHost(rabbitmq_virtual_host)
+//                .setRelayHost(rabbitmq_host)
+//                .setClientLogin(rabbitmq_username)
+//                .setClientPasscode(rabbitmq_password)
+//                .setSystemLogin(rabbitmq_username)
+//                .setSystemPasscode(rabbitmq_password)
+//                .setSystemHeartbeatSendInterval(5000)
+//                .setSystemHeartbeatReceiveInterval(4000);
     }
 
     @Override

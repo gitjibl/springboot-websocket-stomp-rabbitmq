@@ -31,6 +31,6 @@ public class RabbitmqProducer {
     @Test
     public void say(){
 
-        rabbitTemplate.convertAndSend("topicExchange","topic.public","hi rabbitmq...");
+        rabbitTemplate.convertAndSend("topicExchange","topic.user","hi rabbitmq...");
     }
 }

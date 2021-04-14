@@ -1,5 +1,7 @@
 package com.example.springbootwebsocketstomprabbitmq.model;
 
+import java.util.Map;
+
 /**
  * @ProjectName: springboot-websocket-stomp-rabbitmq
  * @Package: com.example.springbootwebsocketstomprabbitmq.model
@@ -14,21 +16,13 @@ public class ChatMessage {
     private String content;
     private String sender;
     private String to;
+    private Map<String,Object> onlineUsers;
 
     public enum MessageType {
         CHAT,
         JOIN,
-        LEAVE
-    }
-
-    @Override
-    public String toString() {
-        return "ChatMessage{" +
-                "type=" + type +
-                ", content='" + content + '\'' +
-                ", sender='" + sender + '\'' +
-                ", to='" + to + '\'' +
-                '}';
+        LEAVE,
+        PRIVATE_CHAT
     }
 
     public MessageType getType() {
@@ -61,6 +55,25 @@ public class ChatMessage {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public Map<String, Object> getOnlineUsers() {
+        return onlineUsers;
+    }
+
+    public void setOnlineUsers(Map<String, Object> onlineUsers) {
+        this.onlineUsers = onlineUsers;
+    }
+
+    @Override
+    public String toString() {
+        return "ChatMessage{" +
+                "type=" + type +
+                ", content='" + content + '\'' +
+                ", sender='" + sender + '\'' +
+                ", to='" + to + '\'' +
+                ", onlineUsers=" + onlineUsers +
+                '}';
     }
 }
 

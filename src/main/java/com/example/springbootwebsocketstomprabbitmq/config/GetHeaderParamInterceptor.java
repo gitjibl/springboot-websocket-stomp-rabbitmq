@@ -9,8 +9,10 @@ import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import javax.websocket.Session;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author : JCccc
@@ -19,15 +21,14 @@ import java.util.Map;
  **/
 @Component
 public class GetHeaderParamInterceptor extends ChannelInterceptorAdapter {
-
+    
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             Object raw = message.getHeaders().get(SimpMessageHeaderAccessor.NATIVE_HEADERS);
             if (raw instanceof Map) {
-                Object name = ((Map) raw).get("userid");
-                System.out.println(name);
+                Object name = ((Map) raw).get("username");
                 if (name instanceof LinkedList) {
                     // 设置当前访问的认证用户
                     accessor.setUser(new UserPrincipal(((LinkedList) name).get(0).toString()));
