@@ -1,5 +1,7 @@
 package com.example.springbootwebsocketstomprabbitmq;
 
+import com.example.springbootwebsocketstomprabbitmq.model.ChatMessage;
+import com.example.springbootwebsocketstomprabbitmq.utils.JsonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -30,7 +32,11 @@ public class RabbitmqProducer {
 
     @Test
     public void say(){
-
-        rabbitTemplate.convertAndSend("topicExchange","topic.user","hi rabbitmq...");
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender("jibl");
+        chatMessage.setContent("这是一条测试消息！");
+        chatMessage.setTo("ALL");
+        chatMessage.setType(ChatMessage.MessageType.CHAT);
+        rabbitTemplate.convertAndSend("topicExchange","topic.public", JsonUtil.parseObjToJson(chatMessage));
     }
 }
