@@ -31,12 +31,22 @@ public class RabbitmqProducer {
     }
 
     @Test
-    public void say(){
+    public void producerPulic(){
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setSender("jibl");
         chatMessage.setContent("这是一条测试消息！");
         chatMessage.setTo("ALL");
         chatMessage.setType(ChatMessage.MessageType.CHAT);
         rabbitTemplate.convertAndSend("topicExchange","topic.public", JsonUtil.parseObjToJson(chatMessage));
+    }
+
+    @Test
+    public void producerUser(){
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender("jibl");
+        chatMessage.setContent("tom 这是一条单发测试消息！");
+        chatMessage.setTo("tom");
+        chatMessage.setType(ChatMessage.MessageType.PRIVATE_CHAT);
+        rabbitTemplate.convertAndSend("topicExchange","topic.user", JsonUtil.parseObjToJson(chatMessage));
     }
 }
