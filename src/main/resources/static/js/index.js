@@ -15,6 +15,10 @@ function connect() {
     stompClient.connect({
         username: $("#usernameTxt").val()
     }, onConnected, onError);
+
+    /*  socket.onopen = function() {
+          console.log('Opening................');
+      }*/
 }
 
 //强制关闭浏览器  调用websocket.close（）,进行正常关闭
@@ -33,6 +37,7 @@ $("#enter").click(function enter() {
 });
 
 function onConnected() {
+    loadData();
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
     //私聊频道
@@ -43,6 +48,33 @@ function onConnected() {
         JSON.stringify({sender: $("#usernameTxt").val(), type: 'JOIN', to: 'ALL'})
     )
 
+}
+
+function loadData() {
+    $.ajax({
+        //请求方式
+        type: "GET",
+        //请求的媒体类型
+        contentType: "application/json;charset=UTF-8",
+        //请求地址
+        url: "http://192.168.0.244:8120/messageinfo/getAllInfos",
+        //数据，json字符串
+        data: {
+            username: $("#usernameTxt").val()
+        },
+        //请求成功
+        success: function (result) {
+            var formGroups = "";
+            for (var i = 0; i < result.length; i++) {
+                formGroups += "<li class='list-group-item list-group-item-info'>" + result[i].userfrom + ":    " + result[i].content + "</li>";
+            }
+            $("#messageBox").append(formGroups);
+        },
+        //请求失败，包含具体的错误信息
+        error: function (e) {
+            console.log(e);
+        }
+    });
 }
 
 //关闭双通道
@@ -67,9 +99,9 @@ function onMessageReceived(payload) {
     var onlineUsers = message.onlineUsers;
     var userBox = "";
     if (message.type == "JOIN" || message.type == "LEAVE") {
-        if(message.type == "JOIN"){
+        if (message.type == "JOIN") {
             formGroup = "<li class='list-group-item list-group-item-success'>" + "“" + message.sender + "”" + "上线了！" + "</li>"
-        }else{
+        } else {
             formGroup = "<li class='list-group-item list-group-item-warning'>" + "“" + message.sender + "”" + "下线了！" + "</li>"
         }
         for (var key in onlineUsers) {

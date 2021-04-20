@@ -123,7 +123,6 @@ public class RabbitmqConfig {
                     System.out.println("执行topicUserQueue中的消息的业务处理流程......");
                     sendToWebsocket = chatService.sendUserMsg(msg);
                 }
-
                 if (sendToWebsocket) {
                     System.out.println("消息处理成功！ 已经推送到websocket！");
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), true); //确认消息成功消费
